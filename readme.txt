@@ -1,0 +1,27 @@
+=== Simple Newsletter Generator ===
+Contributors: tysss
+Tags: email, mailing list, mail generator, tiedottaminen
+Requires at least: 3.8.0
+Tested up to: 4.2.2
+Stable tag: 0.1
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+Plugin generates a mailing platform, mainly for organizational info newsletters.
+
+== Description ==
+
+A rather simple mailing platform. Creates a new post type, which are then used to generate a newsletter email with multiple subjects.
+
+Currently the plugin is only in Finnish, but translation possibility is being developed.
+
+== Installation ==
+
+1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Set the settings in the Tiedotettavat->asetukset menu for the plugin
+
+== Changelog ==
+
+= 0.1 =
+* Initial release. First version only in Finnish. Still in development, but plugin is usable and stable, and is already in use in a few organizations and in a commercial business.
