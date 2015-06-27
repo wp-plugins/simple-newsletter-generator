@@ -9,7 +9,7 @@ Version: 0.2.1
 */
 include( plugin_dir_path( __FILE__ ) . 'asetukset.php');
 
-load_plugin_textdomain('tiedotus', false, dirname( plugin_basename( __FILE__ ) ) );
+load_plugin_textdomain('tiedotus', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
 
 add_action( 'init', 'alusta_tiedotuspostityyppi' );
 add_action( 'add_meta_boxes', 'lisaa_tiedotettava_metaboksit' );

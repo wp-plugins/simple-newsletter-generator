@@ -3,7 +3,7 @@ Contributors: tysss
 Tags: email, mailing list, mail generator, tiedottaminen
 Requires at least: 3.8.0
 Tested up to: 4.2.2
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ A rather simple mailing platform. Creates a new post type, which are then used t
 
 == Changelog ==
 
-= 0.2.1 =
+= 0.2.1 & 0.2.3 =
 * Fixed a bug with Finnish translation
 
 = 0.2 =
