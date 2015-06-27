@@ -24,7 +24,7 @@ class TiedotusAsetukset
     public function lisaa_tiedotusasetussivu()
     {
         // This page will be under "Tiedotettavat"
-			add_submenu_page( 'edit.php?post_type=tiedotettavat', 'Tiedotusasetukset' , 'Tiedotuksen asetukset', 'activate_plugins', 'tiedotuksen-asetukset', array( $this, 'create_admin_page' ) );
+			add_submenu_page( 'edit.php?post_type=tiedotettavat', 'Tiedotusasetukset' , __('Newsletter settings' ,'tiedotus'), 'activate_plugins', 'tiedotuksen-asetukset', array( $this, 'create_admin_page' ) );
     }
 
     /**
@@ -45,7 +45,7 @@ class TiedotusAsetukset
                 submit_button(); 
             ?>
             </form>
-					Pluginin tekijä: <a href="mailto:tomi.yla-soininmaki@fimnet.fi">Tomi Ylä-Soininmäki</a>
+					<?php _e('Plugin by:' ,'tiedotus'); ?> <a href="mailto:tomi.yla-soininmaki@fimnet.fi">Tomi Ylä-Soininmäki</a>
         </div>
         <?php
     }
@@ -63,14 +63,22 @@ class TiedotusAsetukset
 
         add_settings_section(
             'lahetystiedot', // ID
-            'Lähetys ja vastaanottajat', // Title
+            __('Mail and recipients' ,'tiedotus'), // Title
             array( $this, 'print_lahetys_info' ), // Callback
             'tiedotuksen-asetukset' // Page
         );        
 
         add_settings_field(
+            'lahettaja', 
+            __('Sender' ,'tiedotus'), 
+            array( $this, 'lahettaja' ), 
+            'tiedotuksen-asetukset', 
+            'lahetystiedot'
+        );  
+
+        add_settings_field(
             'aiheet', 
-            'Aiheiden järjestys', 
+            __('Order of subjects' ,'tiedotus'), 
             array( $this, 'aiheet' ), 
             'tiedotuksen-asetukset', 
             'lahetystiedot'
@@ -78,23 +86,15 @@ class TiedotusAsetukset
 
         add_settings_field(
             'otsikko', 
-            'Oletusotsikko', 
+            __('Default subject/title' ,'tiedotus'), 
             array( $this, 'otsikko' ), 
             'tiedotuksen-asetukset', 
             'lahetystiedot'
         );  
 
         add_settings_field(
-            'lahettaja', 
-            'Lähettäjä', 
-            array( $this, 'lahettaja' ), 
-            'tiedotuksen-asetukset', 
-            'lahetystiedot'
-        );  
-
-        add_settings_field(
             'vastaanottajat', // ID
-            'Oletusvastaanottajat (Bcc), erottele pilkulla', // Title 
+            __('Default recipients (Bcc), separate with commas ", "' ,'tiedotus'), // Title 
             array( $this, 'vastaanottajat' ), // Callback
             'tiedotuksen-asetukset', // Page
             'lahetystiedot' // Section           
@@ -102,7 +102,7 @@ class TiedotusAsetukset
 
         add_settings_field(
             'alkusanat', // ID
-            'Alun oletusteksti', // Title 
+            __('Default intro text / header' ,'tiedotus'), // Title 
             array( $this, 'alkusanat' ), // Callback
             'tiedotuksen-asetukset', // Page
             'lahetystiedot' // Section           
@@ -110,7 +110,7 @@ class TiedotusAsetukset
 
         add_settings_field(
             'valiteksti', // ID
-            'Välissä oleva teksti (html)', // Title 
+            __('Subject-content separator text (html)' ,'tiedotus'), // Title 
             array( $this, 'valiteksti' ), // Callback
             'tiedotuksen-asetukset', // Page
             'lahetystiedot' // Section           
@@ -118,8 +118,16 @@ class TiedotusAsetukset
 
         add_settings_field(
             'allekirjoitus', // ID
-            'Allekirjoitus (html)', // Title 
+            __('Signature (html)' ,'tiedotus'), // Title 
             array( $this, 'allekirjoitus' ), // Callback
+            'tiedotuksen-asetukset', // Page
+            'lahetystiedot' // Section           
+        );    
+
+        add_settings_field(
+            'sisalto_html', // ID
+            __('Format the content box (html)' ,'tiedotus'), // Title 
+            array( $this, 'sisalto_html' ), // Callback
             'tiedotuksen-asetukset', // Page
             'lahetystiedot' // Section           
         );    
@@ -145,6 +153,9 @@ class TiedotusAsetukset
         if( isset( $input['allekirjoitus'] ) )
             $new_input['allekirjoitus'] = $input['allekirjoitus'];
 
+        if( isset( $input['sisalto_html'] ) )
+            $new_input['sisalto_html'] = $input['sisalto_html'];
+
         if( isset( $input['valiteksti'] ) )
             $new_input['valiteksti'] = $input['valiteksti'];
 
@@ -168,7 +179,7 @@ class TiedotusAsetukset
      */
     public function print_lahetys_info()
     {
-        print 'Lähetyksen asetukset: <br>';
+        print __('Email settings:' ,'tiedotus').' <br>';
     }
 
     /** 
@@ -178,14 +189,28 @@ class TiedotusAsetukset
     {
 			$kaikki_aiheet = get_terms('tiedotusaihe', array('hide_empty'=>false));
 			$maara = count($kaikki_aiheet);
-			
+			$koodillalisatyt = array();
 			for ($i=0 ; $i<count($kaikki_aiheet) ; $i++) {
 				echo ($i+1).': <select name="tiedotus-asetus[tiedotusaihe'.$i.']">';
+        $maarittamaton = true;
 				foreach ($kaikki_aiheet as $aihe) {
-					echo '<option value="'.$aihe->slug.'"'.($aihe->slug == $this->options['tiedotusaihe'][$i]?' selected ' : '').'>'.$aihe->name.'</option>';
-				}
-				echo '</select><br />';
-			}
+          if ($aihe->slug == $this->options['tiedotusaihe'][$i]) $maarittamaton = false;
+        }
+        foreach ($kaikki_aiheet as $aihe) {
+          echo '<option value="'.$aihe->slug.'"';
+          if ($aihe->slug == $this->options['tiedotusaihe'][$i]) {
+            echo ' selected ' ;
+          } else {
+            if ($maarittamaton && !in_array($aihe->slug,$this->options['tiedotusaihe']) && !in_array($aihe->slug,$koodillalisatyt)) {
+              echo ' selected ';
+              $koodillalisatyt[] = $aihe->slug;
+              $maarittamaton = false;
+            }
+          }
+          echo '>'.$aihe->name.'</option>';
+        }
+        echo '</select><br />';
+      }
     }
 
     /** 
@@ -194,7 +219,7 @@ class TiedotusAsetukset
     public function otsikko()
     {
         printf(
-            '<input type="text" id="otsikko" name="tiedotus-asetus[otsikko]" value="%s" size=100 /><br />{viikko}, {vuosi} tuottavat kyseiset numerot',
+            '<input type="text" id="otsikko" name="tiedotus-asetus[otsikko]" value="%s" size=100 /><br />'.__('{week}, {year} produce corresponding numbers' ,'tiedotus'),
             isset( $this->options['otsikko'] ) ? esc_attr( $this->options['otsikko']) : ''
         );
     }
@@ -205,7 +230,7 @@ class TiedotusAsetukset
     public function lahettaja()
     {
         printf(
-            '<input type="text" id="lahettaja" name="tiedotus-asetus[lahettaja]" value="%s" size=100 /><br />Esimerkkinimi &lt;osoite&#64;example.com&gt;',
+            '<input type="text" id="lahettaja" name="tiedotus-asetus[lahettaja]" value="%s" size=100 /><br /><i>'.__('Matt Example &lt;email&#64;example.com&gt;' ,'tiedotus').'</i>',
             isset( $this->options['lahettaja'] ) ? esc_attr( $this->options['lahettaja']) : ''
         );
     }
@@ -216,7 +241,7 @@ class TiedotusAsetukset
     public function vastaanottajat()
     {
         printf(
-            '<textarea id="vastaanottajat" cols=100 rows=10 name="tiedotus-asetus[vastaanottajat]">%s</textarea>',
+            '<textarea id="vastaanottajat" cols=100 rows=4 name="tiedotus-asetus[vastaanottajat]">%s</textarea>',
             isset( $this->options['vastaanottajat'] ) ? esc_attr( $this->options['vastaanottajat']) : ''
         );
     }
@@ -227,7 +252,7 @@ class TiedotusAsetukset
     public function alkusanat()
     {
         printf(
-            '<textarea id="alkusanat" cols=100 rows=10 name="tiedotus-asetus[alkusanat]">%s</textarea><br />html ilman br-koodeja (rivinvaihdot toimivat sellaisenaan)', 
+            '<textarea id="alkusanat" cols=100 rows=4 name="tiedotus-asetus[alkusanat]">%s</textarea><br />'.__('html without br-tags (automatic line breaks)' ,'tiedotus'), 
             isset( $this->options['alkusanat'] ) ? esc_attr( $this->options['alkusanat']) : ''
         );
     }
@@ -238,8 +263,19 @@ class TiedotusAsetukset
     public function allekirjoitus()
     {
         printf(
-            '<textarea id="allekirjoitus" cols=100 rows=10 name="tiedotus-asetus[allekirjoitus]">%s</textarea>',
+            '<textarea id="allekirjoitus" cols=100 rows=8 name="tiedotus-asetus[allekirjoitus]">%s</textarea>',
             isset( $this->options['allekirjoitus'] ) ? esc_attr( $this->options['allekirjoitus']) : ''
+        );
+    }
+
+    /** 
+     * Get the settings option array and print one of its values
+     */
+    public function sisalto_html()
+    {
+        printf(
+            '<textarea id="sisalto_html" cols=100 rows=10 name="tiedotus-asetus[sisalto_html]" placeholder="'.htmlspecialchars(tiedotuksen_oletus_sisaltomuotoilu()).'">%s</textarea><br />'.__('html, {title} produces post title and {content} content. Use inline css.' ,'tiedotus'),
+            isset( $this->options['sisalto_html'] ) ? esc_attr( $this->options['sisalto_html']) : ''
         );
     }
 
@@ -249,7 +285,7 @@ class TiedotusAsetukset
     public function valiteksti()
     {
         printf(
-            '<textarea id="valiteksti" cols=100 rows=10 name="tiedotus-asetus[valiteksti]">%s</textarea>',
+            '<textarea id="valiteksti" cols=100 rows=4 name="tiedotus-asetus[valiteksti]" placeholder="'.htmlspecialchars('<hr />').'">%s</textarea>',
             isset( $this->options['valiteksti'] ) ? esc_attr( $this->options['valiteksti']) : ''
         );
     }
