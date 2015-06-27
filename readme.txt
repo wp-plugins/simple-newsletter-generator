@@ -23,7 +23,13 @@ Currently the plugin is only in Finnish, but translation possibility is being de
 
 == Changelog ==
 
-= 0.1.2 =
+= 0.2 =
+* Better ordering of subjects
+* Added more styling options - Now  you can style the whole letter as you wish
+* The plugin is now more modular via custom hooks
+* Changed the language to English, with Finnish translation
+
+= 0.2 =
 * The order of the posts algorithm changed
 
 = 0.1.1 =
