@@ -11,9 +11,8 @@ Plugin generates a mailing platform, mainly for organizational info newsletters.
 
 == Description ==
 
-A rather simple mailing platform. Creates a new post type, which are then used to generate a newsletter email with multiple subjects.
+A rather simple mailing platform. Creates a new post type, which are then used to generate a newsletter email with multiple subjects and messages.
 
-Currently the plugin is only in Finnish, but translation possibility is being developed.
 
 == Installation ==
 
