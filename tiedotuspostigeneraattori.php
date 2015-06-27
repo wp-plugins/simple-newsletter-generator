@@ -5,7 +5,7 @@ Plugin URI: https://wordpress.org/plugins/simple-newsletter-generator/
 Author: Tomi Ylä-Soininmäki
 Author email: tomi.yla-soininmaki@fimnet.fi
 Description: Tiedotuspostien automatisointi. Luo uuden artikkelimuodon, joista tiedotuspostit voi kasata.
-Version: 0.2
+Version: 0.2.1
 */
 include( plugin_dir_path( __FILE__ ) . 'asetukset.php');
 
