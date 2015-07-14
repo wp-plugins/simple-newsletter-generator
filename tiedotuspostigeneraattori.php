@@ -5,7 +5,7 @@ Plugin URI: https://wordpress.org/plugins/simple-newsletter-generator/
 Author: Tomi Ylä-Soininmäki
 Author email: tomi.yla-soininmaki@fimnet.fi
 Description: Tiedotuspostien automatisointi. Luo uuden artikkelimuodon, joista tiedotuspostit voi kasata.
-Version: 0.2.3
+Version: 0.3
 */
 include( plugin_dir_path( __FILE__ ) . 'asetukset.php');
 
@@ -14,7 +14,7 @@ load_plugin_textdomain('tiedotus', false, dirname( plugin_basename( __FILE__ ) )
 add_action( 'init', 'alusta_tiedotuspostityyppi' );
 add_action( 'add_meta_boxes', 'lisaa_tiedotettava_metaboksit' );
 add_action('save_post', 'tallenna_tiedotettavan_meta', 1, 2);
-add_shortcode( 'tiedotusgeneraattori' , 'func_tiedotusgeneraattori');
+add_shortcode( 'uutiskirjeet' , 'func_tiedotusgeneraattori');
 add_action('admin_menu', 'lisaa_tiedotusgeneraattorisivu');
 
 
@@ -182,6 +182,11 @@ function hae_tulevat_tiedotukset( $karsittu = 0 ) {
 		foreach ($aiheet as $aihe) {
 			$kaikki_postit[$aihe->name][] = $tiedotettava;
 		}
+    
+    if (empty($aiheet)) {
+      $kaikki_postit[''][] = $tiedotettava;
+    }
+
 	}
 	
 	foreach ($kaikki_postit as $key => $aihelista) {
@@ -289,7 +294,9 @@ function func_tiedotusgeneraattori() {
   if (isset($asetukset['valiteksti']) && $asetukset['valiteksti'] != '') {
     echo $asetukset['valiteksti'];
   } else {
-    echo '<hr>';
+    if ($asetukset['skippaa_otsikot'] == false) {
+   	 echo '<hr>';
+    }
   }
 	
 	// Tehdään sisällöt
@@ -361,15 +368,20 @@ add_action('tiedotus_otsikot','tiedotuksen_otsikkoalue') ;
 
 function tiedotuksen_otsikkoalue($karsitut_postit) {
   
-  $monesko = 1;
-	foreach ($karsitut_postit as $aihe => $aihelista) { 
-		echo '<h2 style="font-size:14pt; margin-left: 6pt; margin-top: 6pt; margin-bottom: 6pt">&nbsp;'.$aihe.'</h2>'."\r\n". '<ol start="'.$monesko.'">';
-		foreach ($aihelista as $post) {
-			$monesko++;
-			echo '<li>'.$post->post_title . '</li>'."\r\n";
-		}
-		echo '</ol>'."\r\n";
-	}
+  
+  $asetukset = get_option( 'tiedotus-asetus');
+  if (isset($asetukset['skippaa_otsikot']) && $asetukset['skippaa_otsikot'] == false ) {
+    
+    $monesko = 1;
+    foreach ($karsitut_postit as $aihe => $aihelista) { 
+      echo '<h2 style="font-size:14pt; margin-left: 6pt; margin-top: 6pt; margin-bottom: 6pt">&nbsp;'.$aihe.'</h2>'."\r\n". '<ol start="'.$monesko.'">';
+      foreach ($aihelista as $post) {
+        $monesko++;
+        echo '<li>'.$post->post_title . '</li>'."\r\n";
+      }
+      echo '</ol>'."\r\n";
+    }
+  }
 }
 
 
@@ -393,7 +405,6 @@ function tiedotuksen_koko_sisaltoalue($karsitut_postit) {
 
 // SISALLON MUOTOILU
 function tulosta_tiedotussisalto($monesko, $otsikko, $sisalto) {
-  echo '<li>';
   $tuloste = tiedotuksen_oletus_sisaltomuotoilu();
   
   $asetukset = get_option( 'tiedotus-asetus');
@@ -406,18 +417,20 @@ function tulosta_tiedotussisalto($monesko, $otsikko, $sisalto) {
   $tuloste = str_replace('{otsikko}', $otsikko, $tuloste );
   $tuloste = str_replace('{sisalto}', $sisalto, $tuloste );
   echo $tuloste;
-  echo '</li>';
 }
  // Sisallon oletusmuotoilu
 function tiedotuksen_oletus_sisaltomuotoilu() {
-  $muotoilu = '<div style="margin-top: 8pt; margin-bottom: 14pt; padding-left: 12pt; padding-bottom: 6pt; border-left: 1px solid black; border-bottom: 1px solid black;"> 
-	<p>
-		<span style="padding-bottom: 2pt; border-bottom: 1px solid #AAA; font-weight: bold;" >
-			{title}
-		</span>
-	</p>
-	{content}
-</div>';
+  $muotoilu = '<li>
+  <div style="margin-top: 8pt; margin-bottom: 14pt; padding-left: 12pt; padding-bottom: 6pt; border-left: 1px solid black; border-bottom: 1px solid black;"> 
+    <p>
+      <span style="padding-bottom: 2pt; border-bottom: 1px solid #AAA; font-weight: bold;" >
+        {title}
+      </span>
+    </p>
+    {content}
+  </div>
+</li> '   
+    ;
   return $muotoilu;
 }
 

@@ -131,6 +131,14 @@ class TiedotusAsetukset
             'tiedotuksen-asetukset', // Page
             'lahetystiedot' // Section           
         );    
+
+        add_settings_field(
+            'skippaa_aiheet', // ID
+            __('Skip the subject headings' ,'tiedotus'), // Title 
+            array( $this, 'skippaa_aiheet' ), // Callback
+            'tiedotuksen-asetukset', // Page
+            'lahetystiedot' // Section           
+        );    
     }
 
     /**
@@ -161,6 +169,8 @@ class TiedotusAsetukset
 
         if( isset( $input['alkusanat'] ) )
             $new_input['alkusanat'] = $input['alkusanat'];
+
+        $new_input['skippaa_otsikot'] = ( isset( $input['skippaa_otsikot'] ) ? true : false );
 			
 			$kaikki_aiheet = get_terms('tiedotusaihe', array('hide_empty'=>false));
 			$maara = count($kaikki_aiheet);
@@ -288,6 +298,15 @@ class TiedotusAsetukset
             '<textarea id="valiteksti" cols=100 rows=4 name="tiedotus-asetus[valiteksti]" placeholder="'.htmlspecialchars('<hr />').'">%s</textarea>',
             isset( $this->options['valiteksti'] ) ? esc_attr( $this->options['valiteksti']) : ''
         );
+    }
+
+    /** 
+     * Get the settings option array and print one of its values
+     */
+    public function skippaa_aiheet()
+    {
+        echo '<input type="checkbox" name="tiedotus-asetus[skippaa_otsikot]" id="skippaa_otsikot" value="true" '.($this->options['skippaa_otsikot'] == true ? ' checked' : '').'/> ' ;
+      echo '<input type="hidden" name="jokin" value"asd" />';
     }
 }
 
