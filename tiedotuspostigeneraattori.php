@@ -368,20 +368,20 @@ add_action('tiedotus_otsikot','tiedotuksen_otsikkoalue') ;
 
 function tiedotuksen_otsikkoalue($karsitut_postit) {
   
-  
-  $asetukset = get_option( 'tiedotus-asetus');
-  if (isset($asetukset['skippaa_otsikot']) && $asetukset['skippaa_otsikot'] == false ) {
-    
-    $monesko = 1;
-    foreach ($karsitut_postit as $aihe => $aihelista) { 
-      echo '<h2 style="font-size:14pt; margin-left: 6pt; margin-top: 6pt; margin-bottom: 6pt">&nbsp;'.$aihe.'</h2>'."\r\n". '<ol start="'.$monesko.'">';
-      foreach ($aihelista as $post) {
-        $monesko++;
-        echo '<li>'.$post->post_title . '</li>'."\r\n";
-      }
-      echo '</ol>'."\r\n";
-    }
-  }
+	
+	$asetukset = get_option( 'tiedotus-asetus');
+	if (isset($asetukset['skippaa_otsikot']) && $asetukset['skippaa_otsikot'] == true ) return NULL;
+	
+	$monesko = 1;
+	foreach ($karsitut_postit as $aihe => $aihelista) { 
+		echo '<h2 style="font-size:14pt; margin-left: 6pt; margin-top: 6pt; margin-bottom: 6pt">&nbsp;'.$aihe.'</h2>'."\r\n". '<ol start="'.$monesko.'">';
+		foreach ($aihelista as $post) {
+			$monesko++;
+			echo '<li>'.$post->post_title . '</li>'."\r\n";
+		}
+		echo '</ol>'."\r\n";
+		
+	}
 }
 
 
