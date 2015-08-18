@@ -2,8 +2,8 @@
 Contributors: tysss
 Tags: email, mailing list, mail generator, tiedottaminen
 Requires at least: 3.8.0
-Tested up to: 4.2.2
-Stable tag: 0.3
+Tested up to: 4.3
+Stable tag: 0.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,6 +21,11 @@ A rather simple mailing platform. Creates a new post type, which are then used t
 1. Set the settings in the Newsletter settings menu for the plugin
 
 == Changelog ==
+
+
+= 0.3.1 =
+
+* The settings screen now has better default options
 
 = 0.3 =
 * Lots of new settings
